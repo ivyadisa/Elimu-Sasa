@@ -8,7 +8,7 @@ export default function Sidebar() {
 
   const menu = [
     { name: "Dashboard", path: "/dashboard" },
-    { name: "Lesson Plans", path: "/dashboard/lesson-plans" },
+    { name: "Lesson Plans", path: "/dashboard/lesson-plan" },
     { name: "Assessments", path: "/dashboard/assessments" },
     { name: "Classes / Streams", path: "/dashboard/classes" },
     { name: "Active Learners", path: "/dashboard/learners" },
