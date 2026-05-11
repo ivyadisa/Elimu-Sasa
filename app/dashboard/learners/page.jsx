@@ -2,16 +2,9 @@
 
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
-import {
-  Search,
-  Plus,
-  Users,
-  Eye,
-  Filter,
-  GraduationCap,
-} from "lucide-react";
+import { Plus, Users, Eye, GraduationCap } from "lucide-react";
 
 const initialLearners = [
   {
@@ -51,17 +44,23 @@ const initialLearners = [
 export default function LearnersPage() {
   const searchParams = useSearchParams();
 
-  const selectedClass = searchParams.get("class");
-  const selectedStream = searchParams.get("stream");
+  const [selectedClass, setSelectedClass] = useState(null);
+  const [selectedStream, setSelectedStream] = useState(null);
 
   const [learners, setLearners] = useState(initialLearners);
 
-  // Modal state
   const [showModal, setShowModal] = useState(false);
 
-  // Form state
   const [name, setName] = useState("");
   const [admission, setAdmission] = useState("");
+
+  /* =========================
+     SAFE PARAM LOADING
+  ========================= */
+  useEffect(() => {
+    setSelectedClass(searchParams.get("class"));
+    setSelectedStream(searchParams.get("stream"));
+  }, [searchParams]);
 
   /* =========================
      FILTER LEARNERS
@@ -90,7 +89,7 @@ export default function LearnersPage() {
       progress: "New",
     };
 
-    setLearners([...learners, newLearner]);
+    setLearners((prev) => [...prev, newLearner]);
 
     setName("");
     setAdmission("");
@@ -100,9 +99,7 @@ export default function LearnersPage() {
   return (
     <div className="min-h-screen bg-background p-6">
 
-      {/* =========================
-          HEADER
-      ========================= */}
+      {/* HEADER */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
 
         <div>
@@ -119,7 +116,7 @@ export default function LearnersPage() {
 
         <button
           onClick={() => setShowModal(true)}
-          className="bg-primary hover:bg-primary-hover text-white px-5 py-3 rounded-2xl flex items-center gap-2 shadow-soft transition-all"
+          className="bg-primary hover:bg-primary-hover text-white px-5 py-3 rounded-2xl flex items-center gap-2 shadow-soft"
         >
           <Plus size={18} />
           Add Learner
@@ -127,9 +124,7 @@ export default function LearnersPage() {
 
       </div>
 
-      {/* =========================
-          MODAL FORM
-      ========================= */}
+      {/* MODAL */}
       {showModal && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
 
@@ -146,7 +141,7 @@ export default function LearnersPage() {
                 placeholder="Learner Name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full border border-gray-300 p-3 rounded-xl outline-none focus:border-blue-500"
+                className="w-full border p-3 rounded-xl"
               />
 
               <input
@@ -154,12 +149,11 @@ export default function LearnersPage() {
                 placeholder="Admission Number"
                 value={admission}
                 onChange={(e) => setAdmission(e.target.value)}
-                className="w-full border border-gray-300 p-3 rounded-xl outline-none focus:border-blue-500"
+                className="w-full border p-3 rounded-xl"
               />
 
             </div>
 
-            {/* ACTION BUTTONS */}
             <div className="flex justify-end gap-3 mt-5">
 
               <button
@@ -171,9 +165,9 @@ export default function LearnersPage() {
 
               <button
                 onClick={addLearner}
-                className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-xl"
+                className="bg-green-600 text-white px-4 py-2 rounded-xl"
               >
-                Save Learner
+                Save
               </button>
 
             </div>
@@ -182,70 +176,46 @@ export default function LearnersPage() {
         </div>
       )}
 
-      {/* =========================
-          STATS
-      ========================= */}
+      {/* STATS */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8">
 
-        <div className="bg-card rounded-2xl p-5 shadow-soft border border-border">
-          <div className="flex items-center justify-between">
+        <div className="bg-card p-5 rounded-2xl border">
+          <div className="flex justify-between">
             <div>
-              <p className="text-text-muted text-sm">
-                Total Learners
-              </p>
-
-              <h2 className="text-3xl font-bold text-text-main mt-2">
+              <p>Total Learners</p>
+              <h2 className="text-3xl font-bold">
                 {filteredLearners.length}
               </h2>
             </div>
-
-            <Users className="text-primary" />
+            <Users />
           </div>
         </div>
 
-        <div className="bg-card rounded-2xl p-5 shadow-soft border border-border">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-text-muted text-sm">
-                Class
-              </p>
-
-              <h2 className="text-3xl font-bold text-text-main mt-2">
-                {selectedClass || "All"}
-              </h2>
-            </div>
-
-            <GraduationCap className="text-secondary" />
-          </div>
+        <div className="bg-card p-5 rounded-2xl border">
+          <p>Class</p>
+          <h2 className="text-2xl font-bold">
+            {selectedClass || "All"}
+          </h2>
+          <GraduationCap />
         </div>
 
-        <div className="bg-card rounded-2xl p-5 shadow-soft border border-border">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-text-muted text-sm">
-                Stream
-              </p>
-
-              <h2 className="text-3xl font-bold text-success mt-2">
-                {selectedStream || "All"}
-              </h2>
-            </div>
-
-            <Eye className="text-success" />
-          </div>
+        <div className="bg-card p-5 rounded-2xl border">
+          <p>Stream</p>
+          <h2 className="text-2xl font-bold">
+            {selectedStream || "All"}
+          </h2>
+          <Eye />
         </div>
 
       </div>
 
-      {/* =========================
-          TABLE
-      ========================= */}
-      <div className="bg-card rounded-2xl border border-border shadow-soft overflow-hidden">
+      {/* TABLE */}
+      <div className="bg-card rounded-2xl border overflow-hidden">
 
         <table className="w-full">
 
-          <thead className="bg-primary-light text-left">
-            <tr>
+          <thead>
+            <tr className="text-left border-b">
               <th className="p-4">Learner</th>
               <th>Admission</th>
               <th>Grade</th>
@@ -268,7 +238,7 @@ export default function LearnersPage() {
                 <td>{l.stream}</td>
 
                 <td>
-                  <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm">
+                  <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm">
                     {l.progress}
                   </span>
                 </td>
